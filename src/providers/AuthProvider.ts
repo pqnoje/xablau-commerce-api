@@ -1,15 +1,21 @@
 const MongoClient = require('mongodb').MongoClient 
 const ObjectId = require('mongodb').ObjectId
-const config = require('../config.json')
+const config = {
+	"clusters": {
+		"users": "mongodb://localhost:6000/data",
+		"auth": "mongodb://localhost:6000/data"
+	},
+	"tokenSecret": "mylittltinyesecret"
+}
 
-import { UserModel } from '../model/user'
+import { CharacterModel } from '../model/Character.model'
 import { TokenHelper } from '../helpers/token'
 
 export class AuthProvider{
 	
 	constructor(){}
 
-	public static authUser(currentUser: UserModel){
+	public static authUser(currentUser: CharacterModel){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
 				if(err)

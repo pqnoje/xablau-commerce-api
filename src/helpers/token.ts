@@ -1,5 +1,11 @@
 const jwt = require('jsonwebtoken')
-const config = require('../config')
+const config = {
+	"clusters": {
+		"users": "mongodb://localhost:6000/data",
+		"auth": "mongodb://localhost:6000/data"
+	},
+	"tokenSecret": "mylittltinyesecret"
+}
 
 export class TokenHelper{
 	constructor(){}

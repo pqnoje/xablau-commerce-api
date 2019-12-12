@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { UserModel } from '../model/user'
+import { CharacterModel } from '../model/Character.model'
 import { TokenHelper } from '../helpers/token'
 import { AuthProvider } from '../providers/AuthProvider'
 
@@ -16,12 +16,11 @@ export class AuthRouter{
 	}
 
 	private auth(req: Request, res: Response, next: NextFunction){
-		let user = new UserModel()
+		let user = new CharacterModel()
 		user.email = req.body.email
 		user.password = req.body.password
 
-		TokenHelper.verify(req.headers['x-access-token'])
-		.then(() => AuthProvider.authUser(user))
+		AuthProvider.authUser(user)
 		.then(token => res.send(token))
 		.catch(err => res.status(401).send(err))
 	}

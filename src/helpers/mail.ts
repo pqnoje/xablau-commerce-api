@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer')
 
-
 export class MailHelper {
 	constructor(){}
 
