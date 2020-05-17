@@ -1,0 +1,25 @@
+{
+   "type": "mongodb",
+   "host": "localhost",
+   "port": 27017,
+   "database": "test",
+   "synchronize": true,
+   "logging": false,
+   "entities": [
+      "src/entity/auth/*.entity.ts", 
+      "src/entity/containers/*.entity.ts",
+      "src/entity/transactions/*.entity.ts",
+      "src/entity/valuables/*.entity.ts"
+   ],
+   "migrations": [
+      "src/migration/**/*.ts"
+   ],
+   "subscribers": [
+      "src/subscriber/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   }
+}
