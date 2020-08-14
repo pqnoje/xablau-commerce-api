@@ -1,18 +1,34 @@
-import {Entity, PrimaryGeneratedColumn, Column, Index} from "typeorm";
-import { Person } from './person.entity'
+import * as Mongoose from 'mongoose'
+//import * as bcrypt from 'bcrypt'
+const Schema = Mongoose.Schema
+const SALT_WORK_FACTOR = 10
 
-@Entity()
-export class User {
-    @PrimaryGeneratedColumn()
-    public _id: string;
+var UserSchema = new Schema({
+    username: { type: String, required: true, index: { unique: true } },
+    password: { type: String, required: true },
+    person: { type: Schema.Types.ObjectId, ref: 'Person' }
+})
 
-    @Index({ unique: true })
-    @Column()
-    public username: string;
+UserSchema.pre('save', function(next) {
+    let user = this
 
-    @Column()
-    public password: string;
+    // only hash the password if it has been modified (or is new)
+    //if (!user.isModified('password')) return next()
 
-    @Column(type => Person)
-    public person: Person
-}
+    // generate a salt
+    /*bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) return next(err)
+
+        // hash the password using our new salt
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if (err) return next(err)
+
+            // override the cleartext password with the hashed one
+            user.password = hash
+            next()
+        })
+    })*/
+    next()
+})
+
+export const User = Mongoose.model('User', UserSchema)

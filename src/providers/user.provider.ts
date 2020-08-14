@@ -1,34 +1,54 @@
-import { getConnection, getRepository, getMongoManager } from "typeorm";
-import {} from "typeorm";
-import { User } from "../entity/auth/user.entity"
-import { Person } from "../entity/auth/person.entity";
-import { Address } from "../entity/auth/addess.entity";
+import { User } from '../entity/auth/user.entity'
+//import * as bcrypt from 'bcrypt'
 
 export class UserProvider {
 
-    public static getUsers(): Promise<Array<User>> {
-        return getRepository(User).find()
+  public static getAll() {
+    return User.find({})
+  }
+
+  public static async create(params) {
+    try {
+      const user = new User(params)
+      await user.save()
+    } catch (error) {
+      throw error
     }
+  }
 
-    public static async create(params){
-        let user = Object.assign(new User(), params)
+  public static async update(id: string, params) {
+    let user = await User.findById(id)
 
-        return await getRepository(User).save(user)
+    Object.assign(user, params)
+
+    await user.save()
+  }
+
+  public static async delete(id: string) {
+    return await User.findByIdAndDelete(id)
+  }
+
+  public static async find(id: string) {
+    try {
+      let user = await User.findById(id)
+      return user
+    } catch (error) {
+      throw error
     }
+  }
 
-    public static async update(id: string, params){
-        let user =  await getRepository(User).findOne(id)
-    
-        Object.assign(user, params)
+  public static async authenticate(username: string, password: string) {
+    let user = await User.findOne({ username })
 
-        return await getRepository(User).update(id, user)
-    }
-
-    public static async delete(id: string){
-        return await getRepository(User).delete(id)
-    }
-
-    public static async find(id: string){
-        return await getRepository(User).findOne(id)
-    }
+    return new Promise((resolve, reject) => {
+      password === user.password ? resolve() : reject(`username: ${username} has entered wrong password`)
+      
+      /*bcrypt.compare(password, user.password, (error, isMatch) => {
+        if (error) throw error
+        if (isMatch)
+          resolve()
+        reject(`username: ${username} has entered wrong password`)
+      })*/
+    })
+  }
 }

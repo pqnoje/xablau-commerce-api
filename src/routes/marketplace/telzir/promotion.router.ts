@@ -1,8 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { UserProvider } from '../providers/user.provider'
-import { MongoCodeErrors } from '../constants/status-codes.enum'
+import { PromotionProvider } from '../../../providers/marketplace/telzir/promotion.provider'
 
-class UserRouter {
+class PromotionRouter {
   public router: Router
 
   constructor() {
@@ -11,10 +10,10 @@ class UserRouter {
   }
 
   private async getAll(req: Request, res: Response, next: NextFunction) {
-    try {
-      let users = await UserProvider.getAll()
-      res.send(users)
-    } catch (error) {
+    try{
+      let promotions = await PromotionProvider.getAll()
+      res.send(promotions)
+    }catch(error){
       res.sendStatus(404)
     }
   }
@@ -23,12 +22,11 @@ class UserRouter {
     let params = req.body
 
     try {
-      await UserProvider.create(params)
+      await PromotionProvider.create(params)
       res.sendStatus(200)
-    } catch (error) {
-      console.log(error)
-      if (error.code === MongoCodeErrors.ALREADY_EXISTS) res.sendStatus(401)
-      else res.sendStatus(202)
+    } catch(error) {
+      console.error(error)
+      res.sendStatus(400)
     }
   }
 
@@ -36,11 +34,11 @@ class UserRouter {
     let id = req.params.id
     let params = req.body
 
-    try {
-      await UserProvider.update(id, params)
+    try{
+      await PromotionProvider.update(id, params)
       res.sendStatus(200)
-    } catch (error) {
-      res.status(401).send(error)
+    }catch(error){
+      res.sendStatus(400)
     }
   }
 
@@ -48,9 +46,9 @@ class UserRouter {
     let id = req.params.id
 
     try {
-      await UserProvider.delete(id)
+      await PromotionProvider.delete(id)
       res.sendStatus(200)
-    } catch (error) {
+    }catch(error){
       res.sendStatus(400)
     }
   }
@@ -58,22 +56,22 @@ class UserRouter {
   private async find(req: Request, res: Response, next: NextFunction) {
     let id = req.params.id
 
-    try {
-      let user = await UserProvider.find(id)
-      res.send(user)
-    } catch (error) {
-      res.sendStatus(400)
+    try{
+      let promotion = await PromotionProvider.find(id)
+      res.send(promotion)
+    }catch(error){
+      res.sendStatus(404)
     }
   }
 
-  private async authenticate(req: Request, res: Response, next: NextFunction) {
+  private async calc(req: Request, res: Response, next: NextFunction) {
     let params = req.body
 
-    try {
-      await UserProvider.authenticate(params.username, params.password)
-      res.send(true).status(200)
-    } catch (error) {
-      res.send(false).status(401)
+    try{
+      let calc = await PromotionProvider.calc(params)
+      res.send(calc)
+    }catch(error){
+      res.sendStatus(404)
     }
   }
 
@@ -83,10 +81,10 @@ class UserRouter {
     this.router.put('/:id', this.update)
     this.router.delete('/:id', this.delete)
     this.router.get('/:id', this.find)
-    this.router.post('/auth', this.authenticate)
+    this.router.post('/calc', this.calc)
   }
 }
 
-const characterRoutes = new UserRouter()
+const promotionRouter = new PromotionRouter()
 
-export default characterRoutes.router
+export default promotionRouter.router

@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { UserProvider } from '../providers/user.provider'
-import { MongoCodeErrors } from '../constants/status-codes.enum'
+import { ProductProvider } from '../providers/product.provider'
+import * as formidable from 'formidable'
 
-class UserRouter {
+class ProductRouter {
   public router: Router
 
   constructor() {
@@ -12,24 +12,36 @@ class UserRouter {
 
   private async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      let users = await UserProvider.getAll()
-      res.send(users)
+      let products = await ProductProvider.getAll()
+      res.send(products)
     } catch (error) {
       res.sendStatus(404)
     }
   }
 
   private async create(req: Request, res: Response, next: NextFunction) {
-    let params = req.body
+    const form = formidable({ multiples: true });
 
     try {
-      await UserProvider.create(params)
-      res.sendStatus(200)
-    } catch (error) {
-      console.log(error)
-      if (error.code === MongoCodeErrors.ALREADY_EXISTS) res.sendStatus(401)
-      else res.sendStatus(202)
+      let params
+      await form.parse(req, (err, fields, image) => {
+        if (err) {
+          next(err)
+          return
+        }
+  
+        params = {
+          ...JSON.parse(fields.data),
+          image
+        }
+        
+        ProductProvider.create(params)
+        res.sendStatus(200)
+      })
+    }catch(err) {
+      res.sendStatus(400)
     }
+    
   }
 
   private async update(req: Request, res: Response, next: NextFunction) {
@@ -37,10 +49,10 @@ class UserRouter {
     let params = req.body
 
     try {
-      await UserProvider.update(id, params)
+      await ProductProvider.update(id, params)
       res.sendStatus(200)
     } catch (error) {
-      res.status(401).send(error)
+      res.sendStatus(400)
     }
   }
 
@@ -48,7 +60,7 @@ class UserRouter {
     let id = req.params.id
 
     try {
-      await UserProvider.delete(id)
+      await ProductProvider.delete(id)
       res.sendStatus(200)
     } catch (error) {
       res.sendStatus(400)
@@ -59,21 +71,10 @@ class UserRouter {
     let id = req.params.id
 
     try {
-      let user = await UserProvider.find(id)
-      res.send(user)
+      let product = await ProductProvider.find(id)
+      res.send(product)
     } catch (error) {
-      res.sendStatus(400)
-    }
-  }
-
-  private async authenticate(req: Request, res: Response, next: NextFunction) {
-    let params = req.body
-
-    try {
-      await UserProvider.authenticate(params.username, params.password)
-      res.send(true).status(200)
-    } catch (error) {
-      res.send(false).status(401)
+      res.sendStatus(404)
     }
   }
 
@@ -83,10 +84,9 @@ class UserRouter {
     this.router.put('/:id', this.update)
     this.router.delete('/:id', this.delete)
     this.router.get('/:id', this.find)
-    this.router.post('/auth', this.authenticate)
   }
 }
 
-const characterRoutes = new UserRouter()
+const productRouter = new ProductRouter()
 
-export default characterRoutes.router
+export default productRouter.router

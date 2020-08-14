@@ -1,18 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import * as Mongoose from "mongoose"
+const Schema = Mongoose.Schema
 
-@Entity()
-export class Cart {
-
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
-
-    @Column()
-    age: number;
-
-}
+export const Cart = Mongoose.model('Cart', { 
+    status: { type: Number, requeired: true },
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+})

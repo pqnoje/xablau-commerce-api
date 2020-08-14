@@ -1,18 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import * as Mongoose from "mongoose"
+const Schema = Mongoose.Schema
 
-@Entity()
-export class Shelf {
-
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
-
-    @Column()
-    age: number;
-
-}
+export const Shelf = Mongoose.model('Shelf', { 
+    name: { type: String, requeired: true },
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+})

@@ -1,18 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import * as Mongoose from "mongoose"
+const Schema = Mongoose.Schema
 
-@Entity()
-export class User {
-
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
-
-    @Column()
-    age: number;
-
-}
+export const Wallet = Mongoose.model('Wallet', { 
+    balance: { type: Number, requeired: true, default: 0.0 },
+    person: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
+})

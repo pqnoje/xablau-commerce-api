@@ -1,31 +1,36 @@
 import UserRouter from './routes/user.router'
+import PersonRouter from './routes/person.router'
+import AddressRouter from './routes/address.router'
+import ShelfRouter from './routes/shelf.router'
+import CartRouter from './routes/cart.router'
+import ProductRouter from './routes/product.router'
+import CheckoutRouter from './routes/checkout.router'
+import WalletRouter from './routes/wallet.router'
+import DeliveryRouter from './routes/delivery.router'
+import NationalFeeRouter from './routes/marketplace/telzir/national-fee.router'
+import AreaRouter from './routes/marketplace/telzir/area.router'
+import PromotionRouter from './routes/marketplace/telzir/promotion.router'
 import * as express from 'express'
 import * as logger from 'morgan'
 import * as bodyParser from 'body-parser'
-import { createConnection, Connection } from "typeorm"
+import { connectMongo } from './connections/mongodb.connection'
 
-// Creates and configures an ExpressJS web server.
 class App {
-
-  // ref to Express instance
   public express: express.Application
 
-  //Run configuration methods on the Express instance.
   constructor() {
     this.express = express()
     this.middleware()
-    createConnection()
     this.routes()
+    connectMongo()
   }
 
-  // Configure Express middleware.
   private middleware(): void {
     this.express.use(logger('dev'))
     this.express.use(bodyParser.json())
     this.express.use(bodyParser.urlencoded({ extended: false }))
   }
 
-  // Configure API endpoints.
   private routes(): void {
     /* This is just to get up and running, and to make sure what we've got is
      * working so far. This function will change when we start to add more
@@ -37,8 +42,21 @@ class App {
         message: 'Ecommerce API'
       })
     })
+
     this.express.use('/', router)
     this.express.use('/api/v1/users', UserRouter)
+    this.express.use('/api/v1/people', PersonRouter)
+    this.express.use('/api/v1/addresses', AddressRouter)
+    this.express.use('/api/v1/shelfs', ShelfRouter)
+    this.express.use('/api/v1/carts', CartRouter)
+    this.express.use('/api/v1/products', ProductRouter)
+    this.express.use('/api/v1/wallets', WalletRouter)
+    this.express.use('/api/v1/checkouts', CheckoutRouter)
+    this.express.use('/api/v1/deliveries', DeliveryRouter)
+
+    this.express.use('/api/v1/marketplace/telzir/national-fees', NationalFeeRouter)
+    this.express.use('/api/v1/marketplace/telzir/areas', AreaRouter)
+    this.express.use('/api/v1/marketplace/telzir/promotions', PromotionRouter)
   }
 }
 

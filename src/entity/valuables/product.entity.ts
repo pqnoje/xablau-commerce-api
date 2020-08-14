@@ -1,18 +1,14 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import * as Mongoose from "mongoose"
+const Schema = Mongoose.Schema
 
-@Entity()
-export class Product {
+export const Product = Mongoose.model('Product', { 
+    name: { type: String, required: true },
+    value: { type: Number, required: true },
+    amount: { type: Number, required: true, default: 0 },
+    image: { type: String, required: true},
+    shelfs: [{ type: Schema.Types.ObjectId, ref: 'Shelf' }],
+})
 
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
-
-    @Column()
-    age: number;
+export function groupBy(products, attribute){
 
 }

@@ -1,22 +1,10 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from "typeorm";
-import { Address } from "./addess.entity";
+import * as Mongoose from "mongoose"
+const Schema = Mongoose.Schema
 
-
-@Entity()
-export class Person {
-
-    @PrimaryGeneratedColumn()
-    _id: string;
-
-    @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
-
-    @Column()
-    birthday: Date;
-
-    @Column(type => Address)
-    address: Address
-}
+export const Person = Mongoose.model('Person', { 
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    birthday: { type: Date, required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    address: [{ type: Schema.Types.ObjectId, ref: 'Address' }],
+})

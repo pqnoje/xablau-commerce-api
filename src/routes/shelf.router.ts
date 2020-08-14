@@ -1,8 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { UserProvider } from '../providers/user.provider'
-import { MongoCodeErrors } from '../constants/status-codes.enum'
+import { ShelfProvider } from '../providers/shelf.provider'
 
-class UserRouter {
+class ShelfRouter {
   public router: Router
 
   constructor() {
@@ -11,10 +10,12 @@ class UserRouter {
   }
 
   private async getAll(req: Request, res: Response, next: NextFunction) {
+    let params = req.query
     try {
-      let users = await UserProvider.getAll()
-      res.send(users)
+      let shelfs = await ShelfProvider.getAll(params)
+      res.send(shelfs)
     } catch (error) {
+      console.error(error)
       res.sendStatus(404)
     }
   }
@@ -23,12 +24,11 @@ class UserRouter {
     let params = req.body
 
     try {
-      await UserProvider.create(params)
+      await ShelfProvider.create(params)
       res.sendStatus(200)
     } catch (error) {
-      console.log(error)
-      if (error.code === MongoCodeErrors.ALREADY_EXISTS) res.sendStatus(401)
-      else res.sendStatus(202)
+      console.error(error)
+      res.sendStatus(400)
     }
   }
 
@@ -37,10 +37,10 @@ class UserRouter {
     let params = req.body
 
     try {
-      await UserProvider.update(id, params)
+      await ShelfProvider.update(id, params)
       res.sendStatus(200)
     } catch (error) {
-      res.status(401).send(error)
+      res.sendStatus(400)
     }
   }
 
@@ -48,7 +48,7 @@ class UserRouter {
     let id = req.params.id
 
     try {
-      await UserProvider.delete(id)
+      await ShelfProvider.delete(id)
       res.sendStatus(200)
     } catch (error) {
       res.sendStatus(400)
@@ -59,22 +59,16 @@ class UserRouter {
     let id = req.params.id
 
     try {
-      let user = await UserProvider.find(id)
-      res.send(user)
+      let product = await ShelfProvider.find(id)
+      res.send(product)
     } catch (error) {
-      res.sendStatus(400)
+      res.sendStatus(404)
     }
   }
 
-  private async authenticate(req: Request, res: Response, next: NextFunction) {
-    let params = req.body
-
-    try {
-      await UserProvider.authenticate(params.username, params.password)
-      res.send(true).status(200)
-    } catch (error) {
-      res.send(false).status(401)
-    }
+  private async categories(req: Request, res: Response, next: NextFunction) {
+    let categories = ShelfProvider.categories()
+    res.send(categories)
   }
 
   init() {
@@ -83,10 +77,10 @@ class UserRouter {
     this.router.put('/:id', this.update)
     this.router.delete('/:id', this.delete)
     this.router.get('/:id', this.find)
-    this.router.post('/auth', this.authenticate)
+    this.router.get('/categories', this.categories)
   }
 }
 
-const characterRoutes = new UserRouter()
+const productRouter = new ShelfRouter()
 
-export default characterRoutes.router
+export default productRouter.router
