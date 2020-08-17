@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { PromotionProvider } from '../../../providers/marketplace/telzir/promotion.provider'
+import { PromotionProvider } from '../../providers/marketplace/promotion.provider'
 
 class PromotionRouter {
   public router: Router
@@ -64,24 +64,12 @@ class PromotionRouter {
     }
   }
 
-  private async calc(req: Request, res: Response, next: NextFunction) {
-    let params = req.body
-
-    try{
-      let calc = await PromotionProvider.calc(params)
-      res.send(calc)
-    }catch(error){
-      res.sendStatus(404)
-    }
-  }
-
   init() {
     this.router.get('/', this.getAll)
     this.router.post('/', this.create)
     this.router.put('/:id', this.update)
     this.router.delete('/:id', this.delete)
     this.router.get('/:id', this.find)
-    this.router.post('/calc', this.calc)
   }
 }
 

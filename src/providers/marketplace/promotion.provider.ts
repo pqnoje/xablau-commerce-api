@@ -1,5 +1,4 @@
-import { Promotion } from '../../../entity/marketplace/telzir/promotion.entity'
-import { NationalFeeProvider } from './national-fee.provider'
+import { Promotion } from '../../entity/marketplace/promotion.entity'
 
 const PROMOTION_TAX = 1.1
 const FREE_BY_PROMOTION = 0
@@ -50,26 +49,4 @@ export class PromotionProvider {
       throw error
     }
   }
-
-  public static async calc(params) {
-    try {
-      let nationalFee = await NationalFeeProvider.findByOriginDist(params.originArea.code, params.distArea.code)
-      let promotionValue: number, normalValue: number
-      
-      if(nationalFee){
-        let finalDuration = params.promotion.amount - params.duration
-        promotionValue = finalDuration < 0 ? (finalDuration * -1) * nationalFee.value * PROMOTION_TAX : FREE_BY_PROMOTION
-        normalValue = nationalFee.value * params.duration
-      }
-      
-      let result = {
-        ...params,
-        promotionValue,
-        normalValue
-      }
-      return result
-    } catch (error) {
-      throw error
-    }
-  } 
 }
