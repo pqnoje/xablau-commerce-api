@@ -1,7 +1,3 @@
-import { AreaProvider } from './providers/marketplace/telzir/area.provider'
-import { NationalFeeProvider } from './providers/marketplace/telzir/national-fee.provider'
-import { PromotionProvider } from './providers/marketplace/promotion.provider'
-
 import * as Mongoose from "mongoose"
 
 let database: Mongoose.Connection
